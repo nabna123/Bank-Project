@@ -1,0 +1,17 @@
+
+img{
+    height: 75px;
+    max-width: 200px;
+    border-radius: 10PX;
+} 
+
+.nav{
+    background-color: rgb(40, 171, 241);
+    display: flex;
+    justify-content: space-between;
+    position: fixed; 
+    top: 0;
+    left: 0; 
+    width: 100vw;
+    z-index: 1000px;
+}

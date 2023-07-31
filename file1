@@ -1,0 +1,395 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import './Requestedform.css';
+import data from './Data';
+
+function Requestform() {
+  const[ showNextContainer,setShowNextContainer]=useState(false);
+  const [customerAccountNumber, setCustomerAccountNumber] = useState('');
+  const [branchCode,setBranchCode]=useState('');
+  const [branchName,setBranchName]=useState('');
+  const [customerName,setCustomerName]=useState('');
+  const [combinedData, setCombinedData] = useState([]);
+  const [file, setFile] = useState(null);
+
+
+  const initialQuestions = {
+    question1: true,
+    question2: false,
+    question3: false,
+    question4: false,
+    question5: false,
+    question6: false
+  };
+   const [showupload,setShowUpload] = useState(false)
+  const [showquestions,setShowQuestions] = useState(initialQuestions);
+
+  const {question1,question2,question3,question4,question5,question6} = showquestions;
+
+  const handleShowQuestions = (e) => {
+    const {name , checked} = e.target;
+    setShowQuestions((draft)=>({...draft,[name] : checked}))
+    if(name === 'showupload'){
+      setShowUpload(true)
+    }
+  };
+
+
+  const filteredData = data.filter(
+    (item) => item.customeraccountnumber === customerAccountNumber
+  );
+  function No(){
+  alert("bahbdj");
+  }
+  function yes(){
+    alert("cfvghb")
+  }
+  function upload(){
+    const formData = {
+      branchCode ,
+      branchName,
+      customerName,
+      customerAccountNumber,
+      question1,
+      question2,
+      question3,
+      question4,
+      question5,
+      question6,
+    };
+    
+    
+  localStorage.setItem('formData', JSON.stringify(formData));
+  setFile(null);
+  setShowUpload(false); // Hide the file div after uploading.
+  setShowNextContainer(true); // Show the "Press to continue" button and next container div.
+  alert("Upload Successfully");
+}
+  
+  function check() {
+    if (
+      customerAccountNumber.length === 15 &&
+      (!branchCode || !branchName || !customerName)
+    ) {
+      alert("Branch code, Branch name, and Customer name cannot be empty when the customer account number has 15 digits.");
+  } else{
+      const localStorageData = JSON.parse(localStorage.getItem('formdata')) || [];
+
+      const filteredData = data.filter((item) => item.customeraccountnumber === customerAccountNumber);
+
+
+      const combinedData = [...localStorageData, ...filteredData];
+
+
+    }
+  }
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.ms-excel', 'image/jpeg', 'image/png'];
+    
+    if (selectedFile && allowedTypes.includes(selectedFile.type)) {
+      setFile(selectedFile);
+    } else {
+      setFile(null);
+      alert("Invalid file type. Please upload a PDF, DOC, Excel, or an image.");
+    }
+  };
+  if(customerAccountNumber.length === 15){
+    check();
+  }
+  return (
+    <div className='container'>
+      <div className='dd'>
+        <div className='link'>
+          <Link to='/' className='dash'>
+            <h4>Dashboard</h4>
+          </Link>
+          <h4>/ REQUEST FORM</h4>
+        </div>
+      </div>
+      <div className='hh'>
+        <div className='head_requestform'>
+          <h2>REQUEST FORM</h2>
+        </div>
+      </div>
+      <div className='container1'>
+        <div className='grid'>
+          <div className='gg'>
+          <div className='code'>
+            <label>Branch Code*</label>
+            <br />
+            <input
+              id='inp'
+              type='text'
+              placeholder='ALP' value={branchCode}
+              onChange={(e) => setBranchCode(e.target.value)}
+          
+            />
+          </div>
+          <div className='code'>
+            <label>Branch Name*</label>
+            <br />
+            
+            <input id='inp' type='text' placeholder='Branch Name'value={branchName}
+              onChange={(e) => setBranchName(e.target.value)} />
+          </div>
+          <div className='code'>
+            <label>Customer Name*</label>
+            <br />
+            <input id='inp' type='text' placeholder='Customer Name'  value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}/>
+          </div>
+          <div className='code'>
+            <label>Customer Account Number*</label>
+            <br />
+            <input
+              id='inp'
+              type='number'
+              placeholder='Customer Account'
+              value={customerAccountNumber}
+              onChange={(e) => setCustomerAccountNumber(e.target.value)}
+            />
+          </div>
+          <div className='code'>
+            <label>Customer Account Type*</label>
+            <br />
+            <select id='inp'>
+              <option>---Select---</option>
+              <option value='SA'>SA</option>
+              <option value='CA'>CA</option>
+              <option value='SA-NRI'>SA-NRI</option>
+              <option value='SA-NRO'>SA-NRO</option>
+            </select>
+          </div>
+          </div>
+ 
+          {filteredData.length > 0 && (
+        <div className='tabledata'>
+          <h3>Previous Approved Compensation Claims</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Requested On</th>
+                <th>Branch Name</th>
+                <th>Compensation</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+            { combinedData.map((item) =>  (
+                <tr key={item.id}>
+                  <td>{item.requestedOn}</td>
+                  <td>{item.branchname}</td>
+                  <td>{item.compensation}</td>
+                  <td>{item.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <div className='dd'>
+        <div className='q1'>
+           <div className="que">
+            <p>Does the customer pertain to Retail Banking ?*</p>
+            </div>
+            <div className="ans">
+              <input
+                type="radio"
+                name='question2'
+                value="yes"
+                onClick={handleShowQuestions}
+              />
+              <label>Yes</label>
+              <input
+                type="radio"
+                name='question2'
+                value='No'
+                 onClick={No}
+              />
+              <label>No</label>
+          
+             </div>
+          </div>
+          
+          {question2 && (
+            <div className='q1'>
+            <div className="que">
+              <p>Are we revising any income or charges booked earlier by the bank ?*</p>
+              </div>
+              <div className="ans">
+                <input
+                  type="radio"
+                  name='question3'
+                  value='yes'
+                 onClick={yes}
+                  
+                />
+                <label>Yes</label>
+                <input
+                  type="radio"
+                  name='question3'
+                  value='No'
+                  onClick={handleShowQuestions}
+                />
+                <label>No</label>
+              </div>
+            </div>
+          )}
+           
+          {question3 && (
+            <div className='q1'>
+             <div className="que">
+              <p>Was there any deficiency/error on part of the bank system process of officials ?*</p>
+              </div>
+              <div className="ans">
+                <input
+                  type="radio"
+                  name='question4'
+                 value='yes'
+                 onClick={yes}
+                  
+                />
+                <label>Yes</label>
+                <input
+                  type="radio"
+                  name='question4'
+                  value="no"
+                  onClick={handleShowQuestions}
+                />
+                <label>No</label>
+              </div>
+            </div>
+          )}
+          {question4 && (
+            <div className='q1'>
+                <div className="que">
+                  <p>Is the service gesture being booked against BO advisory ?*</p>
+                </div>
+                <div className="ans">
+                  <input
+                    type="radio"
+                    name='question5'
+                    value='yes'
+                 onClick={yes}
+                    
+                  />
+                  <label>Yes</label>
+                  <input
+                    type="radio"
+                    name='question5'
+                    value="no"
+                    
+                    onClick={handleShowQuestions}
+                  />
+                  <label>No</label>
+                </div>              
+            </div>          
+          )}
+          {question5 && (
+            <div className='q1'>
+             <div className="que">
+              <p>Is the service gesture being booked for absorbing stamp paper cost related to SBLC(Standby Letter Of Credit)issuance against FCNR/NRI deposits ?*</p>
+              </div>
+              <div className="ans">
+                <input
+                  type="radio"
+                  name='question6'
+                  value='yes'
+                 onClick={yes}
+                 
+                />
+                <label>Yes</label>
+                <input
+                  type="radio"
+                  name='question6'
+                  value="no"
+                  onClick={handleShowQuestions}
+                 
+                />
+                <label>No</label>
+              </div>
+            </div>
+          )}
+          {question6 && (
+            <div className='q1'>
+              <div className="que">
+              <p>Is customer request obtained for compensation claimed ?*</p>
+              </div>
+              <div className="ans">
+                <input
+                  type="radio"
+                  name='showupload'
+                  value="yes"
+                  onClick={handleShowQuestions}
+                />
+                <label>Yes</label>
+                <input
+                  type="radio"
+                  name='showupload'
+                  value='No'
+                  onClick={No}
+                 
+                />
+                <label>No</label>
+              </div>
+            </div>
+          )}
+          </div>
+          { showupload &&(
+            
+            <div className="file">
+              <label>Please upload your compensation letter</label>
+              <input type="file" onChange={handleFileChange} />
+              <button className='upload' onClick={upload}>Upload</button>
+            <ul>
+              <li className='move'>Upload a maximum of live files</li>
+              <li className='move'>Each with a minimum size of 2 MP</li>
+              <li className='move'>Allowed file types of doc,pdf and exel</li>
+            </ul>
+            
+                        </div>
+                     
+          )}
+          {showNextContainer && (
+          <button className='btn1' onClick={() => setShowNextContainer(false)}>
+           Press to continue
+          </button>
+)}
+        </div>
+        
+      </div>
+      
+      <div className='nextcont'>
+        <div className='ll'>
+          <div className='grid1'>
+          <div className='cx'>
+          <label>Date of Complaint(DD/MM/YYYY)</label>
+          <input type='date' placeholder='dd-mm-yyy'></input>
+          </div>
+          <div className='cx'>
+          <label>Date of occurrence of incident(DD/MM/YYYY)</label>
+          <input type='date'placeholder='dd-mm-yyyy'></input>
+          </div>
+          <div className='cx'>
+          <label>Date of identification of incident (DD/MM/YYYY)</label>
+          <input type='date'placeholder='dd-mm-yyyy'></input>
+          </div>
+          <div className='cx'>
+          <label>Debit GL a/c</label>
+          <input type='number'placeholder='516141108'></input>
+          </div>
+          <div className='cx'>
+         <label>Brief Description of the incident *</label>
+         <textarea> </textarea>
+           </div>
+
+           </div>
+        </div>
+       </div>
+      
+    </div>
+  );
+}
+
+export default Requestform;
